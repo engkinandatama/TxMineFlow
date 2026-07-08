@@ -1,0 +1,9 @@
+name: txmineflow
+channels: [conda-forge, bioconda]
+dependencies:
+  - python>=3.10
+  - nextflow>=23.10
+  - duckdb
+  - pip
+  - pip:
+      - -e .
