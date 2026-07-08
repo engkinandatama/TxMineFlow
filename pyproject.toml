@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "txmineflow"
+version = "0.1.0"
+description = "Systematic mining of public tumor transcriptome collections"
+requires-python = ">=3.10"
+dependencies = ["click>=8.1", "pyyaml>=6.0", "duckdb>=0.10", "pandas>=2.0"]
+
+[project.optional-dependencies]
+report = ["jupyter", "nbconvert", "matplotlib", "seaborn"]
+
+[project.scripts]
+txmineflow = "txmineflow.cli:cli"
+
+[tool.setuptools]
+packages = ["txmineflow"]
