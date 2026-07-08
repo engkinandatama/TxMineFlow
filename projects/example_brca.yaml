@@ -1,0 +1,25 @@
+# TxMineFlow project = one dataset collection + stages + contrasts.
+# This is the whole UX: `txmineflow run --project projects/example_brca.yaml`
+name: brca_demo
+description: Breast cancer tumor-vs-normal demo cohort
+
+# --- STAGE 1 input (used when run_fetch: true) ---
+# A collection of public accessions. TxMineFlow harmonises them via fetchngs.
+accessions:
+  - SRR000000        # replace with real SRA/GEO run accessions
+  - SRR000001
+
+# --- v0.1 shortcut: start from a counts matrix (skips fetch + quant) ---
+counts:  data/counts.tsv          # genes x samples
+samples: data/samplesheet.tsv     # sample_id + condition column
+
+# --- STAGE 4 contrast: column,test_level,ref_level ---
+contrast: "condition,tumor,normal"
+
+# --- which stages to run ---
+stages:
+  fetch:   false     # STAGE 1
+  quant:   false     # STAGE 2
+  subtype: false     # STAGE 3 (stub)
+  mining:  true      # STAGE 4
+  compare: false     # STAGE 5 (stub)
