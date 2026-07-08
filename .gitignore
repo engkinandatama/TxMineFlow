@@ -1,0 +1,6 @@
+results/
+.nextflow*
+work/
+__pycache__/
+*.duckdb
+plan/*
