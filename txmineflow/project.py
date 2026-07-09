@@ -35,6 +35,7 @@ class Project:
         return {
             "counts": self.counts, "samples": self.samples,
             "contrast": self.contrast,
+            "accessions": self.accessions,
             "run_fetch":   s.get("fetch",   False),
             "run_quant":   s.get("quant",   False),
             "run_mining":  s.get("mining",  True),
