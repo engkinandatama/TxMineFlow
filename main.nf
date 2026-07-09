@@ -9,8 +9,8 @@ nextflow.enable.dsl=2
  */
 
 include { MINING } from './subworkflows/local/mining'
-include { FETCHNGS } from './subworkflows/nf-core/fetchngs/main.nf'
-include { RNASEQ } from './subworkflows/nf-core/rnaseq/main.nf'
+include { FETCHNGS } from './subworkflows/nf-core/fetchngs'
+include { RNASEQ } from './subworkflows/nf-core/rnaseq'
 include { SUBTYPE } from './modules/local/subtype'
 include { COMPARE } from './modules/local/compare'
 
