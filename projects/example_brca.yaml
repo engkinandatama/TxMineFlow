@@ -11,8 +11,8 @@ accessions:
   - SRR1555547
 
 # --- v0.1 shortcut: start from a counts matrix (skips fetch + quant) ---
-counts:
-samples:
+counts:  data/counts.tsv
+samples: data/samplesheet.tsv
 
 # --- STAGE 4 contrast: column,test_level,ref_level ---
 contrast: "condition,tumor,normal"
