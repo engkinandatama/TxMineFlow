@@ -9,28 +9,42 @@ nextflow.enable.dsl=2
  */
 
 include { MINING } from './subworkflows/local/mining'
+include { FETCHNGS } from 'https://github.com/nf-core/fetchngs'
+include { RNASEQ } from 'https://github.com/nf-core/rnaseq'
+include { SUBTYPE } from './modules/local/subtype'
+include { COMPARE } from './modules/local/compare'
 
 workflow {
 
-    // -------- STAGE 1: data selection (TODO) --------
-    // Intended: include { FETCHNGS } from nf-core and feed accessions from the
-    // project config. For v0.1 we start from a provided count matrix instead.
-    // if (params.run_fetch) { FETCHNGS(ch_accessions) }
+    // Workflow logic:
+    if (params.run_fetch) {
+        ch_accessions = Channel.fromList(params.accessions)
+        FETCHNGS(ch_accessions)
 
-    // -------- STAGE 2: functional processing (TODO) --------
-    // Intended: include { RNASEQ } from nf-core/rnaseq -> counts matrix.
-    // if (params.run_quant) { RNASEQ(ch_reads) }
+        if (params.run_quant) {
+            // Hubungkan output reads DAN samplesheet dari FETCHNGS ke RNASEQ
+            RNASEQ(FETCHNGS.out.reads, FETCHNGS.out.samplesheet)
+            ch_counts = RNASEQ.out.counts
+            ch_samples = FETCHNGS.out.samplesheet
+        }
+    } else {
+        // Fallback: gunakan file lokal jika fetch tidak jalan
+        ch_counts  = Channel.fromPath(params.counts,  checkIfExists: true)
+        ch_samples = Channel.fromPath(params.samples, checkIfExists: true)
+    }
 
-    // For v0.1 the counts + sample sheet come straight from the project.
-    ch_counts  = Channel.fromPath(params.counts,  checkIfExists: true)
-    ch_samples = Channel.fromPath(params.samples, checkIfExists: true)
+    // -------- STAGE 3: structure/subtyping --------
+    if (params.run_subtype) {
+        SUBTYPE(ch_counts)
+    }
 
     // -------- STAGE 4: mining (v0.1 - REAL) --------
     if (params.run_mining) {
         MINING(ch_counts, ch_samples, params.contrast)
     }
 
-    // -------- STAGE 3 & 5 (STUB) --------
-    // if (params.run_subtype) { SUBTYPE(ch_counts) }
-    // if (params.run_compare) { COMPARE(MINING.out.de_table.collect()) }
+    // -------- STAGE 5: comparative/consensus --------
+    if (params.run_compare) {
+        COMPARE(MINING.out.de_table.collect())
+    }
 }

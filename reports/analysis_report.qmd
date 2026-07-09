@@ -1,0 +1,40 @@
+---
+title: "TxMineFlow Report"
+format: html
+execute:
+  echo: false
+---
+
+```{r}
+#| label: setup
+#| message: false
+library(duckdb)
+library(plotly)
+library(dplyr)
+
+# Gunakan path absolut dengan mode read_only
+db_path <- "/home/nanda/projects/txmineflow/results/warehouse/txmineflow.duckdb"
+con <- dbConnect(duckdb(), db_path, read_only = TRUE)
+de_results <- dbGetQuery(con, "SELECT * FROM differential_expression")
+dbDisconnect(con)
+```
+
+## Analisis Differensial Ekspresi
+
+Ini adalah tabel gen yang signifikan:
+
+```{r}
+de_results %>%
+  filter(padj < 0.05) %>%
+  head(10) %>%
+  knitr::kable()
+```
+
+## Visualisasi Volcano Plot
+
+```{r}
+plot_ly(de_results, x = ~log2FoldChange, y = ~(-log10(pvalue)),
+        type = 'scatter', mode = 'markers',
+        hoverinfo = 'text', text = ~gene) %>%
+  layout(title = "Volcano Plot", xaxis = list(title = "Log2 Fold Change"), yaxis = list(title = "-Log10 P-value"))
+```

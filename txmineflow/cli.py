@@ -33,12 +33,23 @@ def init(name, outdir):
 
 @cli.command(context_settings=dict(ignore_unknown_options=True))
 @click.option("--project", "project_path", required=True, type=click.Path(exists=True))
+@click.option("--dry-run", is_flag=True, help="Validate pipeline without running processes.")
+@click.option("--debug", is_flag=True, help="Enable Nextflow debug mode.")
+@click.option("--verbose", is_flag=True, help="Enable verbose output.")
+@click.option("--benchmark", is_flag=True, help="Generate performance report and timeline.")
 @click.argument("nextflow_args", nargs=-1, type=click.UNPROCESSED)
-def run(project_path, nextflow_args):
+def run(project_path, dry_run, debug, verbose, benchmark, nextflow_args):
     """Validate the project and launch the Nextflow DAG."""
     proj = Project.load(project_path)
     click.echo(f"project '{proj.name}' OK - launching Nextflow")
+
     cmd = ["nextflow", "run", "main.nf", *_nf_args(proj.nextflow_params()), *nextflow_args]
+
+    if dry_run: cmd.append("-stub-run")
+    if debug:   cmd.append("-debug")
+    if verbose: cmd.append("-verbose")
+    if benchmark: cmd.extend(["-with-report", "logs/report.html", "-with-timeline", "logs/timeline.html"])
+
     click.echo(" ".join(cmd))
     sys.exit(subprocess.call(cmd))
 
